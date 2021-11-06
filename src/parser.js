@@ -27,15 +27,42 @@ const urlValidityCheck = url => {
 // }
 // JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
 
-function multyIndex(obj, string, value) {
-    if (typeof is == 'string')
-        return index(obj,is.split('.'), value);
-    else if (is.length==1 && value!==undefined)
-        return obj[is[0]] = value;
-    else if (is.length==0)
-        return obj;
-    else
-        return index(obj[is[0]],is.slice(1), value);
+//!!!!!!!!! function index(obj,is, value) {
+//     if (typeof is == 'string'){
+//         return index(obj,is.split('.'), value);
+//     } else if (is.length==1 && value!==undefined) {
+//         return obj[is[0]] = value;
+//     } else if (is.length==0) {
+//         return obj;
+//     }
+//     else {
+//         let result = index(obj[is[0]],is.slice(1), value);
+//         console.log('==========RESUUUUULT=======', result);
+//         return index(obj[is[0]],is.slice(1), value);
+//     }
+// }
+
+//!!1 const recompose = (obj, string, value) => {
+//     var parts = string.split('.');
+//     var newObj = obj[parts[0]];
+//     if (parts[1]) {
+//       parts.splice(0, 1);
+//       var newString = parts.join('.');
+//       return recompose(newObj, newString);
+//     }
+//     return newObj;
+// }
+
+const recompose = (keys, value) => {
+    const keyss = keys;
+    const valuee = value;
+    var tempObject = {};
+    var container = tempObject;
+    keyss.split('.').map((k, i, values) => {
+       container = (container[k] = (i == values.length - 1 ? valuee : {}))
+    });
+    console.log(JSON.stringify(tempObject, null, ' '));
+    return tempObject
 }
 
 
@@ -58,12 +85,15 @@ const parser = (query) => {
 
     // console.log('============PARAMS=========', params);
     
-    const jsonObj = {}
+    let jsonObj = {}
     params.forEach((value, key) => {
-        // console.log(value, key)
+        // console.log(typeof (key), '===========KEY AND VALUE',value)
         if(value && key.includes('.')) {
-            //!!! multyIndex(obj, string, value)
-            if (value) return (key = clean(value))
+            // let keys = key.split('.');
+            // console.log('=================', keys)
+            // index(jsonObj, key, value)
+            return Object.assign(jsonObj, recompose(key, value))
+            // return jsonObj = recompose(key, value)
         }
         if (value) return jsonObj[key] = clean(value)
     })
