@@ -53,55 +53,44 @@ const urlValidityCheck = url => {
 //     return newObj;
 // }
 
-const recompose = (keys, value) => {
-    const keyss = keys;
-    const valuee = value;
+const keySplitter = (keys, value) => {
     var tempObject = {};
     var container = tempObject;
-    keyss.split('.').map((k, i, values) => {
-       container = (container[k] = (i == values.length - 1 ? valuee : {}))
-    });
-    console.log(JSON.stringify(tempObject, null, ' '));
+    keys
+        .split('.')
+        .map((k, i, values) => {
+            container = (container[k] = (i == values.length - 1 ? value : {}))
+        });
     return tempObject
 }
 
 
 const clean = (value) => {
-    let TRUE_VALUES = ['true'];
-    if (!value || TRUE_VALUES.includes(value)) {
-        return true
-    } else if (!value.includes('"') && !isNaN(Number(value))) {
-        return Number(value)
-    } 
+    let checkIfTrue = ['true'].includes(value);
+    let checkIfFalse = ['false'].includes(value);
+    let checkIfNumber = !value.includes('"') && !isNaN(Number(value));
+
+    if (checkIfTrue) return true
+    else if (checkIfFalse) return false
+    else if (checkIfNumber) return Number(value) 
     return value.replace(/"/g, '')
 }
 
 const parser = (query) => {
     const queryURL = new URL(query).search;
-    console.log('========queryURL==============', queryURL)
     if (queryURL.length < 1) return null;
     if (queryURL.replace('?', '').includes('?') > 0) throw new Error('URL is invalid');
     const params = new URLSearchParams(queryURL);
 
-    // console.log('============PARAMS=========', params);
-    
     let jsonObj = {}
     params.forEach((value, key) => {
-        // console.log(typeof (key), '===========KEY AND VALUE',value)
-        if(value && key.includes('.')) {
-            // let keys = key.split('.');
-            // console.log('=================', keys)
-            // index(jsonObj, key, value)
-            return Object.assign(jsonObj, recompose(key, value))
-            // return jsonObj = recompose(key, value)
-        }
-        if (value) return jsonObj[key] = clean(value)
+        if(value && key.includes('.')) 
+            return Object.assign(jsonObj, keySplitter(key, value))
+        if (value) 
+            return jsonObj[key] = clean(value)
     })
-
-    console.log('============jsonObj JSON=========', jsonObj)
-
+    console.log(JSON.stringify(jsonObj, null, ' '));
     return jsonObj
 };
 
 module.exports = parser;
-// JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
