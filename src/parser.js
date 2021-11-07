@@ -34,7 +34,7 @@ const parser = query => {
         if (value) 
             return jsonResponse[key] = clean(value)
     })
-    console.log('================= RESPONSE =================', JSON.stringify(jsonResponse, true, ' '));
+    console.log('================= RESPONSE JSON =================', JSON.stringify(jsonResponse, true, ' '));
     return jsonResponse
 };
 
