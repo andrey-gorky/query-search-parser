@@ -1,11 +1,3 @@
-const url = require('url');
-
-//!!! Need to figure out how to ignore & from command line
-
-const urlValidityCheck = url => {
-    if (url.length < 1) return null;
-    if (url.lastIndexOf('?') > 0) throw new Error('URL is not valid');
-}
 
 const keySplitter = (keys, value) => {
     var tempObject = {};
@@ -29,21 +21,21 @@ const clean = (value) => {
     return value.replace(/"/g, '')
 }
 
-const parser = (query) => {
+const parser = query => {
     const queryURL = new URL(query).search;
     if (queryURL.length < 1) return null;
     if (queryURL.lastIndexOf('?') > 0) throw new Error('URL is invalid');
     const params = new URLSearchParams(queryURL);
 
-    let jsonObj = {}
+    let jsonResponse = {}
     params.forEach((value, key) => {
         if(value && key.includes('.')) 
-            return Object.assign(jsonObj, keySplitter(key, value))
+            return Object.assign(jsonResponse, keySplitter(key, value))
         if (value) 
-            return jsonObj[key] = clean(value)
+            return jsonResponse[key] = clean(value)
     })
-    console.log(JSON.stringify(jsonObj, null, ' '));
-    return jsonObj
+    console.log('================= RESPONSE =================', JSON.stringify(jsonResponse, true, ' '));
+    return jsonResponse
 };
 
 module.exports = parser;
